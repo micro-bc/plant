@@ -12,6 +12,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  uuid: ^3.0.2
+  provider: ^5.0.0
+
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
