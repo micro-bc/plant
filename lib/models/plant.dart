@@ -37,10 +37,10 @@ class PlantModel extends ChangeNotifier {
       id: _id,
       name: _name,
       notes: _notes,
-      watering: _watering,
-      spraying: _spraying,
-      feeding: _feeding,
-      rotating: _rotating,
+      watering: _watering.clone(),
+      spraying: _spraying.clone(),
+      feeding: _feeding.clone(),
+      rotating: _rotating.clone(),
     );
   }
 
@@ -73,6 +73,13 @@ class PlantCareModel extends ChangeNotifier {
     DateTime? last,
   })  : _period = period,
         _last = last ?? DateTime.now();
+
+  PlantCareModel clone() {
+    return PlantCareModel(
+      period: _period,
+      last: _last,
+    );
+  }
 
   int? get period => _period;
   DateTime get last => _last;
