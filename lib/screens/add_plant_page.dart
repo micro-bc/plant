@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:plant/models/plant.dart';
 import 'package:plant/models/plants.dart';
+import 'package:plant/utils/care_icons.dart';
 import 'package:provider/provider.dart';
 
 class AddPlantPage extends StatelessWidget {
@@ -8,25 +10,30 @@ class AddPlantPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () => _onBackPressed(context),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Add Plant'),
-          actions: [
-            IconButton(
-              onPressed: () {
-                // TODO Validate
-                Provider.of<PlantsModel>(context, listen: false).add(plant);
-                Navigator.pop(context);
-              },
-              icon: Icon(Icons.check),
-            )
-          ],
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: _AddPlantForm(plant: plant),
+    return ChangeNotifierProvider<PlantModel>(
+      create: (context) => plant,
+      child: WillPopScope(
+        onWillPop: () => _onBackPressed(context),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('Add Plant'),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  // TODO Validate
+                  Provider.of<PlantsModel>(context, listen: false).add(plant);
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.check),
+              )
+            ],
+          ),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: _AddPlantForm(),
+            ),
+          ),
         ),
       ),
     );
@@ -36,9 +43,9 @@ class AddPlantPage extends StatelessWidget {
 Future<bool> _onBackPressed(BuildContext context) {
   return showDialog<bool>(
     context: context,
-    builder: (context) => new AlertDialog(
-      title: new Text('Are you sure?'),
-      content: new Text('This will not save the plant'),
+    builder: (context) => AlertDialog(
+      title: const Text('Are you sure?'),
+      content: const Text('This will not save the plant'),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(false),
@@ -53,84 +60,80 @@ Future<bool> _onBackPressed(BuildContext context) {
   ).then((value) => value ?? false);
 }
 
-class _AddPlantForm extends StatefulWidget {
-  final PlantModel plant;
-
-  const _AddPlantForm({Key? key, required this.plant}) : super(key: key);
-
-  @override
-  State<StatefulWidget> createState() => _AddPlantState(plant);
-}
-
-class _AddPlantState extends State<_AddPlantForm> {
-  final PlantModel plant;
-
-  _AddPlantState(this.plant);
-
+class _AddPlantForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Form(
-      child: Column(
-        children: [
-          _FormGroup(
-            title: 'Apperance',
+    return Consumer<PlantModel>(
+      builder: (context, plant, child) {
+        return Form(
+          child: Column(
             children: [
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Name',
-                  hintText: 'My plant',
-                ),
-                onChanged: (value) => plant.name = value,
-                validator: (value) {
-                  if (value!.isEmpty) return 'Name cannot be empty!';
-                },
-              )
+              _FormGroup(
+                title: 'Apperance',
+                children: [
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'Name',
+                      hintText: 'My plant',
+                    ),
+                    onChanged: (value) => plant.name = value,
+                    validator: (value) {
+                      if (value!.isEmpty) return 'Name cannot be empty!';
+                    },
+                  )
+                ],
+              ),
+              _FormGroup(
+                title: 'Periodic care',
+                children: [
+                  _CareInput(
+                    careModel: plant.watering,
+                    leading: Icon(
+                      CareIcons.water,
+                      color: Colors.blue[400],
+                    ),
+                    name: 'Watering',
+                  ),
+                  _CareInput(
+                    careModel: plant.spraying,
+                    leading: Icon(
+                      CareIcons.spray,
+                      color: Colors.green[400],
+                    ),
+                    name: 'Spraying',
+                  ),
+                  _CareInput(
+                    careModel: plant.feeding,
+                    leading: Icon(
+                      CareIcons.feed,
+                      color: Colors.brown[400],
+                    ),
+                    name: 'Feeding',
+                  ),
+                  _CareInput(
+                    careModel: plant.rotating,
+                    leading: Icon(
+                      CareIcons.rotate,
+                      color: Colors.purple[400],
+                    ),
+                    name: 'Rotate',
+                  ),
+                ],
+              ),
+              _FormGroup(
+                title: 'Other',
+                children: [
+                  TextFormField(
+                    decoration: const InputDecoration(labelText: 'Notes'),
+                    maxLines: null,
+                    onChanged: (value) => plant.notes = value,
+                  ),
+                ],
+              ),
             ],
           ),
-          _FormGroup(
-            title: 'Periodic care',
-            children: [
-              _CareInput(
-                leading: Icon(
-                  Icons.opacity,
-                  color: Colors.blue[400],
-                ),
-                name: 'Watering',
-              ),
-              _CareInput(
-                leading: Icon(
-                  Icons.blur_on,
-                  color: Colors.green[400],
-                ),
-                name: 'Spraying',
-              ),
-              _CareInput(
-                leading: Icon(
-                  Icons.bubble_chart,
-                  color: Colors.brown[400],
-                ),
-                name: 'Feeding',
-              ),
-              _CareInput(
-                leading: Icon(
-                  Icons.rotate_right,
-                  color: Colors.purple[400],
-                ),
-                name: 'Rotate',
-              ),
-            ],
-          ),
-          _FormGroup(
-            title: 'Other',
-            children: [
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'Notes'),
-                maxLines: null,
-              ),
-            ],
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -138,26 +141,68 @@ class _AddPlantState extends State<_AddPlantForm> {
 class _CareInput extends StatelessWidget {
   final Widget leading;
   final String name;
+  final PlantCareModel careModel;
 
   const _CareInput({
     Key? key,
     required this.leading,
     required this.name,
+    required this.careModel,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          leading,
-          Padding(
-            padding: const EdgeInsets.only(left: 10.0),
-            child: Text(name),
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: careModel.period == null
+              ? () => careModel.period = 1
+              : () => careModel.period = null,
+          child: Container(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                leading,
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10.0),
+                    child: Text(name),
+                  ),
+                ),
+                if (careModel.period != null)
+                  Text(
+                    careModel.period == 1
+                        ? 'every day'
+                        : 'every ${careModel.period} days',
+                    textScaleFactor: 1.2,
+                  ),
+                Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: careModel.period == null
+                      ? Icon(
+                          Icons.toggle_off,
+                          size: 30,
+                        )
+                      : Icon(
+                          Icons.toggle_on,
+                          size: 30,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+        ),
+        if (careModel.period != null)
+          // TODO Log. scale
+          Slider(
+            value: careModel.period!.toDouble(),
+            min: 1,
+            max: 30,
+            divisions: 29,
+            onChanged: (value) => careModel.period = value.toInt(),
+          ),
+      ],
     );
   }
 }
@@ -176,12 +221,15 @@ class _FormGroup extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Container(
-        padding: const EdgeInsets.all(5.0),
+        padding: const EdgeInsets.all(6.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, textScaleFactor: 0.8),
-            ...children,
+            Text(title, textScaleFactor: 0.9),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(children: children),
+            ),
           ],
         ),
       ),

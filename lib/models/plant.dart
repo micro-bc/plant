@@ -6,52 +6,41 @@ class PlantModel extends ChangeNotifier {
   String _name;
   String _notes;
 
-  int? _wateringPeriod;
-  int? _sprayingPeriod;
-  int? _feedingPeriod;
-  int? _rotationPeriod;
-  DateTime _lastWatered;
-  DateTime _lastSprayed;
-  DateTime _lastFed;
-  DateTime _lastRotated;
+  PlantCareModel _watering;
+  PlantCareModel _spraying;
+  PlantCareModel _feeding;
+  PlantCareModel _rotating;
 
   PlantModel({
     String? id,
     String? name,
     String? notes,
-    int? wateringPeriod,
-    int? sprayingPeriod,
-    int? feedingPeriod,
-    int? rotationPeriod,
-    DateTime? lastWatered,
-    DateTime? lastSprayed,
-    DateTime? lastFed,
-    DateTime? lastRotated,
+    PlantCareModel? watering,
+    PlantCareModel? spraying,
+    PlantCareModel? feeding,
+    PlantCareModel? rotating,
   })  : _id = id ?? Uuid().v4(),
         _name = name ?? "",
         _notes = notes ?? "",
-        _wateringPeriod = wateringPeriod,
-        _sprayingPeriod = sprayingPeriod,
-        _feedingPeriod = feedingPeriod,
-        _rotationPeriod = rotationPeriod,
-        _lastWatered = lastWatered ?? DateTime.now(),
-        _lastSprayed = lastSprayed ?? DateTime.now(),
-        _lastFed = lastFed ?? DateTime.now(),
-        _lastRotated = lastRotated ?? DateTime.now();
+        _watering = watering ?? PlantCareModel(),
+        _spraying = spraying ?? PlantCareModel(),
+        _feeding = feeding ?? PlantCareModel(),
+        _rotating = rotating ?? PlantCareModel() {
+    _watering.addListener(notifyListeners);
+    _spraying.addListener(notifyListeners);
+    _feeding.addListener(notifyListeners);
+    _rotating.addListener(notifyListeners);
+  }
 
   PlantModel clone() {
     return PlantModel(
       id: _id,
       name: _name,
       notes: _notes,
-      wateringPeriod: _wateringPeriod,
-      sprayingPeriod: _sprayingPeriod,
-      feedingPeriod: _feedingPeriod,
-      rotationPeriod: _rotationPeriod,
-      lastWatered: _lastWatered,
-      lastSprayed: _lastSprayed,
-      lastFed: _lastFed,
-      lastRotated: _lastRotated,
+      watering: _watering,
+      spraying: _spraying,
+      feeding: _feeding,
+      rotating: _rotating,
     );
   }
 
@@ -59,14 +48,10 @@ class PlantModel extends ChangeNotifier {
   String get name => _name;
   String get notes => _notes;
 
-  int? get wateringPeriod => _wateringPeriod;
-  int? get sprayingPeriod => _sprayingPeriod;
-  int? get feedingPeriod => _feedingPeriod;
-  int? get rotationPeriod => _rotationPeriod;
-  DateTime get lastWatered => _lastWatered;
-  DateTime get lastSprayed => _lastSprayed;
-  DateTime get lastFed => _lastFed;
-  DateTime get lastRotated => _lastRotated;
+  PlantCareModel get watering => _watering;
+  PlantCareModel get spraying => _spraying;
+  PlantCareModel get feeding => _feeding;
+  PlantCareModel get rotating => _rotating;
 
   set name(String name) {
     _name = name;
@@ -77,28 +62,32 @@ class PlantModel extends ChangeNotifier {
     _notes = notes;
     notifyListeners();
   }
+}
 
-  void water() => _lastWatered = DateTime.now();
-  set wateringPeriod(int? period) {
-    _wateringPeriod = period;
+class PlantCareModel extends ChangeNotifier {
+  int? _period;
+  DateTime _last;
+
+  PlantCareModel({
+    int? period,
+    DateTime? last,
+  })  : _period = period,
+        _last = last ?? DateTime.now();
+
+  int? get period => _period;
+  DateTime get last => _last;
+  int? get daysTillCare => _period == null
+      ? null
+      : _last.add(Duration(days: _period!)).difference(DateTime.now()).inDays +
+          1;
+
+  set period(int? period) {
+    _period = period;
     notifyListeners();
   }
 
-  void spray() => _lastSprayed = DateTime.now();
-  set sprayingPeriod(int? period) {
-    _sprayingPeriod = period;
-    notifyListeners();
-  }
-
-  void feed() => _lastFed = DateTime.now();
-  set feedingPeriod(int? period) {
-    _feedingPeriod = period;
-    notifyListeners();
-  }
-
-  void rotate() => _lastRotated = DateTime.now();
-  set rotationPeriod(int? period) {
-    _rotationPeriod = period;
+  set last(DateTime last) {
+    _last = last;
     notifyListeners();
   }
 }

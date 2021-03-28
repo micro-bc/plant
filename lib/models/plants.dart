@@ -10,11 +10,13 @@ class PlantsModel extends ChangeNotifier {
       UnmodifiableListView(_plants.values);
 
   void add(PlantModel plant) {
+    if (!_plants.containsKey(plant.id)) plant.addListener(notifyListeners);
     _plants[plant.id] = plant;
     notifyListeners();
   }
 
   void remove(String id) {
+    _plants[id]?.removeListener(notifyListeners);
     _plants.remove(id);
     notifyListeners();
   }
