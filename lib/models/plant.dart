@@ -32,17 +32,36 @@ class PlantModel extends ChangeNotifier {
     _rotating.addListener(notifyListeners);
   }
 
-  PlantModel clone() {
-    return PlantModel(
-      id: _id,
-      name: _name,
-      notes: _notes,
-      watering: _watering.clone(),
-      spraying: _spraying.clone(),
-      feeding: _feeding.clone(),
-      rotating: _rotating.clone(),
-    );
-  }
+  PlantModel clone() => PlantModel(
+        id: _id,
+        name: _name,
+        notes: _notes,
+        watering: _watering.clone(),
+        spraying: _spraying.clone(),
+        feeding: _feeding.clone(),
+        rotating: _rotating.clone(),
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': _id,
+        'name': _name,
+        'notes': _notes,
+        'watering': _watering.toJson(),
+        'spraying': _spraying.toJson(),
+        'feeding': _feeding.toJson(),
+        'rotating': _rotating.toJson(),
+      };
+
+  PlantModel.fromJson(Map<String, dynamic> map)
+      : this(
+          id: map['id'],
+          name: map['name'],
+          notes: map['notes'],
+          watering: PlantCareModel.fromJson(map['watering']),
+          spraying: PlantCareModel.fromJson(map['spraying']),
+          feeding: PlantCareModel.fromJson(map['feeding']),
+          rotating: PlantCareModel.fromJson(map['rotating']),
+        );
 
   String get id => _id;
   String get name => _name;
@@ -74,12 +93,21 @@ class PlantCareModel extends ChangeNotifier {
   })  : _period = period,
         _last = last ?? DateTime.now();
 
-  PlantCareModel clone() {
-    return PlantCareModel(
-      period: _period,
-      last: _last,
-    );
-  }
+  PlantCareModel clone() => PlantCareModel(
+        period: _period,
+        last: _last,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'period': _period,
+        'last': _last.toIso8601String(),
+      };
+
+  PlantCareModel.fromJson(Map<String, dynamic> json)
+      : this(
+          period: json['period'],
+          last: DateTime.tryParse(json['last']) ?? DateTime.now(),
+        );
 
   int? get period => _period;
   DateTime get last => _last;
