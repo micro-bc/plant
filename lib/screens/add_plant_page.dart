@@ -176,18 +176,9 @@ class _CareInput extends StatelessWidget {
                         : 'every ${careModel.period} days',
                     textScaleFactor: 1.2,
                   ),
-                Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: careModel.period == null
-                      ? Icon(
-                          Icons.toggle_off,
-                          size: 30,
-                        )
-                      : Icon(
-                          Icons.toggle_on,
-                          size: 30,
-                          color: Theme.of(context).primaryColor,
-                        ),
+                Switch(
+                  value: careModel.period != null,
+                  onChanged: (value) => careModel.period = (value ? 1 : null),
                 ),
               ],
             ),

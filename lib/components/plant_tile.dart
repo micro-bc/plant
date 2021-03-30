@@ -11,15 +11,15 @@ class PlantTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: padd),
-        child: Row(
-          children: [
-            Container(
-              margin: const EdgeInsets.only(right: padd),
-              child: const Icon(Icons.local_florist),
-            ),
-            Expanded(
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(padd),
+            child: const Icon(Icons.local_florist),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: padd),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -51,12 +51,15 @@ class PlantTile extends StatelessWidget {
                 ],
               ),
             ),
-            IconButton(
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: padd),
+            child: IconButton(
               icon: Icon(Icons.more_vert),
               onPressed: () {},
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
