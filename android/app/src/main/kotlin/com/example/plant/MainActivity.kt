@@ -1,4 +1,4 @@
-package com.example.plant
+package cc.jkob.plant
 
 import io.flutter.embedding.android.FlutterActivity
 
