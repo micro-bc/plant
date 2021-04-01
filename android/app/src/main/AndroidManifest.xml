@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cc.jkob.plant">
    <application
-        android:label="plant"
+        android:label="Plant"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
