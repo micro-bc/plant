@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:plant/components/plant_tile.dart';
 import 'package:plant/models/plants.dart';
+import 'package:plant/utils/notification_helper.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
@@ -10,6 +11,14 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Plant'),
         actions: [
+          IconButton(
+            onPressed: () async {
+              var nPlugin =
+                  Provider.of<NotificationHelper>(context, listen: false);
+              await nPlugin.show(0, 'Ur plant ded', 'Yo m8, water ur plant');
+            },
+            icon: const Icon(Icons.notifications),
+          ),
           IconButton(
             onPressed: () => Navigator.pushNamed(context, '/add'),
             icon: const Icon(Icons.add_circle_outline),
