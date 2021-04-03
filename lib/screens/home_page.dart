@@ -12,11 +12,9 @@ class HomePage extends StatelessWidget {
         title: const Text('Plant'),
         actions: [
           IconButton(
-            onPressed: () async {
-              var nPlugin =
-                  Provider.of<NotificationHelper>(context, listen: false);
-              await nPlugin.show(0, 'Ur plant ded', 'Yo m8, water ur plant');
-            },
+            onPressed: () => context
+                .read<NotificationHelper>()
+                .show(0, 'Ur plant ded', 'Yo m8, water ur plant'),
             icon: const Icon(Icons.notifications),
           ),
           IconButton(

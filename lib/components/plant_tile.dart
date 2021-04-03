@@ -3,7 +3,6 @@ import 'package:plant/models/plant.dart';
 import 'package:plant/utils/care_icons.dart';
 
 class PlantTile extends StatelessWidget {
-  static const double padd = 18;
   final PlantModel plant;
 
   const PlantTile({Key? key, required this.plant}) : super(key: key);
@@ -11,55 +10,56 @@ class PlantTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(padd),
-            child: const Icon(Icons.local_florist),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: padd),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(plant.name, textScaleFactor: 1.2),
-                  Row(
+      child: InkWell(
+        onTap: () => Navigator.pushNamed(context, '/details', arguments: plant),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Image.asset('assets/icon/app_icon.png', height: 90),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (plant.watering.period != null)
-                        _CareStatusIcon(
-                          icon: CareIcons.water,
-                          value: plant.watering.daysTillCare!,
-                        ),
-                      if (plant.spraying.period != null)
-                        _CareStatusIcon(
-                          icon: CareIcons.spray,
-                          value: plant.spraying.daysTillCare!,
-                        ),
-                      if (plant.feeding.period != null)
-                        _CareStatusIcon(
-                          icon: CareIcons.feed,
-                          value: plant.feeding.daysTillCare!,
-                        ),
-                      if (plant.rotating.period != null)
-                        _CareStatusIcon(
-                          icon: CareIcons.rotate,
-                          value: plant.rotating.daysTillCare!,
-                        ),
+                      Text(
+                        plant.name,
+                        textScaleFactor: 1.2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 5.0),
+                      Row(
+                        children: [
+                          if (plant.watering.period != null)
+                            _CareStatusIcon(
+                              icon: CareIcons.water,
+                              value: plant.watering.daysTillCare!,
+                            ),
+                          if (plant.spraying.period != null)
+                            _CareStatusIcon(
+                              icon: CareIcons.spray,
+                              value: plant.spraying.daysTillCare!,
+                            ),
+                          if (plant.feeding.period != null)
+                            _CareStatusIcon(
+                              icon: CareIcons.feed,
+                              value: plant.feeding.daysTillCare!,
+                            ),
+                          if (plant.rotating.period != null)
+                            _CareStatusIcon(
+                              icon: CareIcons.rotate,
+                              value: plant.rotating.daysTillCare!,
+                            ),
+                        ],
+                      ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: padd),
-            child: IconButton(
-              icon: Icon(Icons.more_vert),
-              onPressed: () {},
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

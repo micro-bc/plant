@@ -6,34 +6,33 @@ import 'package:plant/utils/care_icons.dart';
 import 'package:provider/provider.dart';
 
 class AddPlantPage extends StatelessWidget {
-  final PlantModel plant = PlantModel();
+  final PlantModel plant;
+
+  AddPlantPage({Key? key, PlantModel? plant})
+      : this.plant = plant ?? PlantModel(),
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<PlantModel>(
-      create: (context) => plant,
-      child: WillPopScope(
-        onWillPop: () => _onBackPressed(context),
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text('Add Plant'),
-            actions: [
-              IconButton(
-                onPressed: () {
-                  // TODO Validate
-                  Provider.of<PlantsModel>(context, listen: false).add(plant);
-                  Navigator.pop(context);
-                },
-                icon: Icon(Icons.check),
-              )
-            ],
-          ),
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _AddPlantForm(),
-            ),
-          ),
+    return WillPopScope(
+      onWillPop: () => _onBackPressed(context),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Add Plant'),
+          actions: [
+            IconButton(
+              onPressed: () {
+                // TODO Validate
+                context.read<PlantsModel>().add(plant);
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.check),
+            )
+          ],
+        ),
+        body: ChangeNotifierProvider<PlantModel>.value(
+          value: plant,
+          child: _AddPlantForm(),
         ),
       ),
     );
@@ -62,11 +61,10 @@ Future<bool> _onBackPressed(BuildContext context) {
 
 class _AddPlantForm extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return Consumer<PlantModel>(
-      builder: (context, plant, child) {
-        return Form(
-          child: Column(
+  Widget build(BuildContext context) => Form(
+        child: Consumer<PlantModel>(
+          builder: (context, plant, child) => ListView(
+            padding: const EdgeInsets.all(8.0),
             children: [
               _FormGroup(
                 title: 'Apperance',
@@ -76,6 +74,7 @@ class _AddPlantForm extends StatelessWidget {
                       labelText: 'Name',
                       hintText: 'My plant',
                     ),
+                    initialValue: plant.name,
                     onChanged: (value) => plant.name = value,
                     validator: (value) {
                       if (value!.isEmpty) return 'Name cannot be empty!';
@@ -126,16 +125,15 @@ class _AddPlantForm extends StatelessWidget {
                   TextFormField(
                     decoration: const InputDecoration(labelText: 'Notes'),
                     maxLines: null,
+                    initialValue: plant.notes,
                     onChanged: (value) => plant.notes = value,
                   ),
                 ],
               ),
             ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
 }
 
 class _CareInput extends StatelessWidget {

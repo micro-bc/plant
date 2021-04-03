@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:plant/models/plant.dart';
 import 'package:plant/utils/plant_storage.dart';
 

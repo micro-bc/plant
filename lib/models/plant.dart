@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 class PlantModel extends ChangeNotifier {
@@ -109,6 +109,11 @@ class PlantCareModel extends ChangeNotifier {
           last: DateTime.tryParse(json['last']) ?? DateTime.now(),
         );
 
+  void updateLast() {
+    _last = DateTime.now();
+    notifyListeners();
+  }
+
   int? get period => _period;
   DateTime get last => _last;
   int? get daysTillCare => _period == null
@@ -118,11 +123,6 @@ class PlantCareModel extends ChangeNotifier {
 
   set period(int? period) {
     _period = period;
-    notifyListeners();
-  }
-
-  set last(DateTime last) {
-    _last = last;
     notifyListeners();
   }
 }
