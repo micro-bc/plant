@@ -149,7 +149,7 @@ class _CareDetails extends StatelessWidget {
       return Text('Do today', style: TextStyle(color: Colors.yellow[600]));
     if (dtc < 0)
       return Text(
-        'Missed by ${-dtc} day${dtc < 1 ? "s" : ""}',
+        'Missed by ${-dtc} day${dtc < -1 ? "s" : ""}',
         style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
       );
     return Text('In $dtc day${dtc > 1 ? "s" : ""}');
