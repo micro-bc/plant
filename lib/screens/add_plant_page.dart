@@ -6,37 +6,31 @@ import 'package:plant/utils/care_icons.dart';
 import 'package:provider/provider.dart';
 
 class AddPlantPage extends StatelessWidget {
-  final PlantModel plant;
-
-  AddPlantPage({Key? key, PlantModel? plant})
-      : this.plant = plant ?? PlantModel(),
-        super(key: key);
-
   @override
-  Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () => _onBackPressed(context),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Add Plant'),
-          actions: [
-            IconButton(
-              onPressed: () {
-                // TODO Validate
-                context.read<PlantsModel>().add(plant);
-                Navigator.pop(context);
-              },
-              icon: Icon(Icons.check),
-            )
-          ],
+  Widget build(BuildContext context) => ChangeNotifierProvider(
+        create: (context) => PlantModel(),
+        builder: (context, _) => WillPopScope(
+          onWillPop: () => _onBackPressed(context),
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text('Add Plant'),
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    // TODO Validate
+                    context
+                        .read<PlantsModel>()
+                        .add(context.read<PlantModel>().clone());
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.check),
+                )
+              ],
+            ),
+            body: _AddPlantForm(),
+          ),
         ),
-        body: ChangeNotifierProvider<PlantModel>.value(
-          value: plant,
-          child: _AddPlantForm(),
-        ),
-      ),
-    );
-  }
+      );
 }
 
 Future<bool> _onBackPressed(BuildContext context) {
@@ -149,51 +143,49 @@ class _CareInput extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: careModel.period == null
-              ? () => careModel.period = 1
-              : () => careModel.period = null,
-          child: Container(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                leading,
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 10.0),
-                    child: Text(name),
+  Widget build(BuildContext context) => Column(
+        children: [
+          GestureDetector(
+            onTap: careModel.period == null
+                ? () => careModel.period = 1
+                : () => careModel.period = null,
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  leading,
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10.0),
+                      child: Text(name),
+                    ),
                   ),
-                ),
-                if (careModel.period != null)
-                  Text(
-                    careModel.period == 1
-                        ? 'every day'
-                        : 'every ${careModel.period} days',
-                    textScaleFactor: 1.2,
+                  if (careModel.period != null)
+                    Text(
+                      careModel.period == 1
+                          ? 'every day'
+                          : 'every ${careModel.period} days',
+                      textScaleFactor: 1.2,
+                    ),
+                  Switch(
+                    value: careModel.period != null,
+                    onChanged: (value) => careModel.period = (value ? 1 : null),
                   ),
-                Switch(
-                  value: careModel.period != null,
-                  onChanged: (value) => careModel.period = (value ? 1 : null),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-        if (careModel.period != null)
-          // TODO Log. scale
-          Slider(
-            value: careModel.period!.toDouble(),
-            min: 1,
-            max: 30,
-            divisions: 29,
-            onChanged: (value) => careModel.period = value.toInt(),
-          ),
-      ],
-    );
-  }
+          if (careModel.period != null)
+            // TODO Log. scale
+            Slider(
+              value: careModel.period!.toDouble(),
+              min: 1,
+              max: 30,
+              divisions: 29,
+              onChanged: (value) => careModel.period = value.toInt(),
+            ),
+        ],
+      );
 }
 
 class _FormGroup extends StatelessWidget {
@@ -207,21 +199,19 @@ class _FormGroup extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Container(
-        padding: const EdgeInsets.all(6.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, textScaleFactor: 0.9),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(children: children),
-            ),
-          ],
+  Widget build(BuildContext context) => Card(
+        child: Container(
+          padding: const EdgeInsets.all(6.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, textScaleFactor: 0.9),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(children: children),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      );
 }
