@@ -57,10 +57,18 @@ class PlantModel extends ChangeNotifier {
           id: map['id'],
           name: map['name'],
           notes: map['notes'],
-          watering: PlantCareModel.fromJson(map['watering']),
-          spraying: PlantCareModel.fromJson(map['spraying']),
-          feeding: PlantCareModel.fromJson(map['feeding']),
-          rotating: PlantCareModel.fromJson(map['rotating']),
+          watering: map['watering'] == null
+              ? null
+              : PlantCareModel.fromJson(map['watering']),
+          spraying: map['spraying'] == null
+              ? null
+              : PlantCareModel.fromJson(map['spraying']),
+          feeding: map['feeding'] == null
+              ? null
+              : PlantCareModel.fromJson(map['feeding']),
+          rotating: map['rotating'] == null
+              ? null
+              : PlantCareModel.fromJson(map['rotating']),
         );
 
   String get id => _id;
@@ -91,7 +99,9 @@ class PlantCareModel extends ChangeNotifier {
     int? period,
     DateTime? last,
   })  : _period = period,
-        _last = last ?? DateTime.now();
+        _last = last ?? DateTime.now() {
+    if ((period ?? 1) < 1) throw ArgumentError('Period must be >= 1 or null');
+  }
 
   PlantCareModel clone() => PlantCareModel(
         period: _period,
@@ -106,7 +116,7 @@ class PlantCareModel extends ChangeNotifier {
   PlantCareModel.fromJson(Map<String, dynamic> json)
       : this(
           period: json['period'],
-          last: DateTime.tryParse(json['last']) ?? DateTime.now(),
+          last: json['last'] == null ? null : DateTime.tryParse(json['last']),
         );
 
   void updateLast() {
@@ -122,6 +132,7 @@ class PlantCareModel extends ChangeNotifier {
           1;
 
   set period(int? period) {
+    if ((period ?? 1) < 1) throw ArgumentError('Period must be >= 1 or null');
     _period = period;
     notifyListeners();
   }
