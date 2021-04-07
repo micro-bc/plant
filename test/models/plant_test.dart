@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:plant/models/plant.dart';
 import 'package:uuid/uuid.dart';
 
+import '../custom_matchers.dart';
+
 void main() {
   group('PlantModel', () {
     test('Constructor with name Roža and empty notes', () {
@@ -167,20 +169,93 @@ void main() {
 
   group('Json', () {
     test('PlantModel toJson', () {
-      final plant = PlantModel(name: "Orhideja", notes: "Jakobova rozica");
-      final json = {'name': 'Orhideja', 'notes': 'Jakobova rozica'};
-      final actualJson = plant.toJson();
+      final id = Uuid().v4();
+      final careModel = PlantCareModel();
+      final actualJson = PlantModel(
+        id: id,
+        name: "Orhideja",
+        notes: "Jakobova rozica",
+        watering: careModel,
+        spraying: careModel,
+        feeding: careModel,
+        rotating: careModel,
+      ).toJson();
+      final expectedJson = {
+        'id': id,
+        'name': 'Orhideja',
+        'notes': 'Jakobova rozica',
+        'watering': careModel.toJson(),
+        'spraying': careModel.toJson(),
+        'feeding': careModel.toJson(),
+        'rotating': careModel.toJson(),
+      };
 
-      json.forEach((key, value) => expect(actualJson[key], value));
+      expect(actualJson, expectedJson);
+    });
+
+    test('PlantCareModel toJson', () {
+      final last = DateTime.now();
+      final actualJson = PlantCareModel(
+        period: 21,
+        last: last,
+      ).toJson();
+      final expectedJson = {
+        'period': 21,
+        'last': last.toIso8601String(),
+      };
+
+      expect(actualJson, expectedJson);
     });
 
     test('PlantModel fromJson', () {
-      //nebi smelo failat, kontaktiraj Jakoba
-      final plant =
-          PlantModel.fromJson({'name': 'Orhideja', 'notes': 'Jakobova rozica'});
+      final id = Uuid().v4();
+      final plantCare = PlantCareModel(period: 21);
+      final plant = PlantModel.fromJson({
+        'id': id,
+        'name': 'Orhideja',
+        'notes': 'Jakobova rozica',
+        'watering': plantCare.toJson(),
+        'spraying': plantCare.toJson(),
+        'feeding': plantCare.toJson(),
+        'rotating': plantCare.toJson(),
+      });
 
-      expect(plant.name, "Orhideja");
-      expect(plant.notes, "Jakobova rozica");
+      expect(plant.id, id);
+      expect(plant.name, 'Orhideja');
+      expect(plant.notes, 'Jakobova rozica');
+      expect(plant.watering.period, 21);
+      expect(plant.spraying.period, 21);
+      expect(plant.feeding.period, 21);
+      expect(plant.rotating.period, 21);
+    });
+
+    test('PlantCareModel fromJson', () {
+      final care = PlantCareModel.fromJson({
+        'period': 21,
+        'last': '2021-04-07',
+      });
+
+      expect(care.period, 21);
+      expect(care.last.toIso8601String().substring(0, 10), '2021-04-07');
+    });
+
+    test('PlantModel fromJson empty', () {
+      final plant = PlantModel.fromJson({});
+
+      expect(plant.id, isNotNull);
+      expect(plant.name, isEmpty);
+      expect(plant.notes, isEmpty);
+      expect(plant.watering, isInstanceOf<PlantCareModel>());
+      expect(plant.spraying, isInstanceOf<PlantCareModel>());
+      expect(plant.feeding, isInstanceOf<PlantCareModel>());
+      expect(plant.rotating, isInstanceOf<PlantCareModel>());
+    });
+
+    test('PlantCareModel fromJson empty', () {
+      final careModel = PlantCareModel.fromJson({});
+
+      expect(careModel.period, isNull);
+      expect(careModel.last, isToday);
     });
   });
 }
