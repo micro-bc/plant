@@ -92,12 +92,10 @@ void main() {
       expect(() => PlantCareModel(period: -20), throwsArgumentError);
     });
 
-    test('Last date in past, expecting exception', () {
-      final currentDate = DateTime.now();
-      final pastDate =
-          DateTime(currentDate.year, currentDate.month - 1, currentDate.day);
+    test('Last date in future, expecting exception', () {
+      final futureDate = DateTime.now().add(Duration(days: 5));
 
-      expect(() => PlantCareModel(last: pastDate), throwsArgumentError);
+      expect(() => PlantCareModel(last: futureDate), throwsArgumentError);
     });
 
     test('Clone', () {
@@ -139,18 +137,39 @@ void main() {
     });
 
     test('Days till care, period 5, last now', () {
-      final care = PlantCareModel(period: 5);
-      final days = care.daysTillCare;
+      final care = PlantCareModel(
+        period: 5,
+        last: DateTime.now().subtract(Duration(seconds: 10)),
+      );
 
-      expect(days, 6); //danes +5 = 6
+      expect(care.daysTillCare, 5);
     });
 
-    test('Days till care, negative, expecting exception', () {
-      //exception?
-      final care = PlantCareModel(period: -5);
-      final days = care.daysTillCare;
+    test('Days till care, period 5, last yesterday', () {
+      final care = PlantCareModel(
+        period: 5,
+        last: DateTime.now().subtract(Duration(seconds: 10, days: 1)),
+      );
 
-      expect(days, isPositive);
+      expect(care.daysTillCare, 4);
+    });
+
+    test('Days till care, period 5, last 6 days ago', () {
+      final care = PlantCareModel(
+        period: 5,
+        last: DateTime.now().subtract(Duration(seconds: 10, days: 6)),
+      );
+
+      expect(care.daysTillCare, 0);
+    });
+
+    test('Days till care, period 5, last 10 days ago', () {
+      final care = PlantCareModel(
+        period: 5,
+        last: DateTime.now().subtract(Duration(seconds: 10, days: 10)),
+      );
+
+      expect(care.daysTillCare, -4);
     });
 
     test('Set period', () {
