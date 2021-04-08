@@ -5,12 +5,12 @@ addons:
     packages:
       - lib32stdc++6
 install:
-  - git clone https://github.com/flutter/flutter.git -b stable --depth=1
-  - ./flutter/bin/flutter doctor
+  - git clone https://github.com/flutter/flutter.git ../flutter -b stable --depth=1
+  - ../flutter/bin/flutter doctor
   - gem install coveralls-lcov
 script:
-  - ./flutter/bin/flutter analyze
-  - ./flutter/bin/flutter test --coverage
+  - ../flutter/bin/flutter analyze
+  - ../flutter/bin/flutter test --coverage
 after_success:
   - coveralls-lcov coverage/lcov.info
 cache:
