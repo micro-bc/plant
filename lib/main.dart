@@ -11,16 +11,14 @@ import 'package:provider/provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final notifications = NotificationHelper();
-  final notifyFuture = notifications.init();
-  final plants = await PlantStorage.getPlants();
-  await notifyFuture;
+  final notifyFuture = NotificationHelper.init();
+  final plantFuture = PlantStorage.getPlants();
 
   runApp(
     MultiProvider(
       providers: [
-        Provider<NotificationHelper>.value(value: notifications),
-        ChangeNotifierProvider<PlantsModel>.value(value: plants),
+        Provider<NotificationHelper>.value(value: await notifyFuture),
+        ChangeNotifierProvider<PlantsModel>.value(value: await plantFuture),
       ],
       child: App(),
     ),

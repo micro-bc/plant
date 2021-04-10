@@ -1,43 +1,33 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:path_provider/path_provider.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:plant/models/plant.dart';
 import 'package:plant/models/plants.dart';
 
 class PlantStorage {
-  PlantStorage._();
+  const PlantStorage._();
 
-  static Future<String> get _localPath async {
-    final dir = await getApplicationDocumentsDirectory();
-    return dir.path;
-  }
-
-  static Future<File> get _localFile async {
-    final path = await _localPath;
-    return File('$path/plants.json');
+  static Future<LocalStorage> _getLocalStorage() async {
+    final storage = LocalStorage('storage');
+    if (!await storage.ready) throw Error();
+    return storage;
   }
 
   static Future<PlantsModel> getPlants() async {
-    try {
-      final file = await _localFile;
+    final storage = await _getLocalStorage();
+    final List<dynamic>? data = storage.getItem('plants');
 
-      List<dynamic> data = jsonDecode(await file.readAsString());
+    if (data == null) return PlantsModel();
 
-      return PlantsModel.fromList(
-        List.generate(
-          data.length,
-          (index) => PlantModel.fromJson(data[index]),
-        ),
-      );
-    } catch (e) {
-      return PlantsModel();
-    }
+    return PlantsModel.fromList(
+      List.generate(
+        data.length,
+        (index) => PlantModel.fromJson(data[index]),
+      ),
+    );
   }
 
-  static Future<File> savePlants(List<PlantModel> plants) async {
-    final file = await _localFile;
+  static Future<void> savePlants(List<PlantModel> plants) async {
+    final storage = await _getLocalStorage();
 
-    return file.writeAsString(jsonEncode(plants));
+    return await storage.setItem('plants', plants);
   }
 }
