@@ -6,90 +6,104 @@ import '../custom_matchers.dart';
 
 void main() {
   group('PlantModel', () {
-    test('Constructor with name Roža and empty notes', () {
-      final plant = PlantModel(name: "Roza");
+    test('Default constructor', () {
+      final plant = PlantModel();
 
-      expect(plant.name, "Roza");
-      expect(plant.notes, "");
-      expect(plant.id.length, 36); //standardna dolzina uuid.v4
-      expect(Uuid.isValidUUID(plant.id), true);
+      expect(Uuid.isValidUUID(plant.id), isTrue);
+      expect(plant.name, '');
+      expect(plant.notes, '');
+      // Are not same instance
+      expect(plant.watering, isNot(same(plant.spraying)));
+      expect(plant.watering, isNot(same(plant.feeding)));
+      expect(plant.watering, isNot(same(plant.rotating)));
+      expect(plant.spraying, isNot(same(plant.feeding)));
+      expect(plant.spraying, isNot(same(plant.rotating)));
+      expect(plant.feeding, isNot(same(plant.rotating)));
+      expect(plant.watering.period, isNull);
+      expect(plant.spraying.period, isNull);
+      expect(plant.feeding.period, isNull);
+      expect(plant.rotating.period, isNull);
     });
 
-    test('Constructor with empty name and notes Notes', () {
-      final plant = PlantModel(notes: "Notes");
+    test('Constructor with parameters', () {
+      final id = Uuid().v4();
+      final careModel = PlantCareModel(period: 5);
+      final plant = PlantModel(
+        id: id,
+        name: 'Kaktus',
+        notes: 'Ni obcutljiv',
+        watering: careModel,
+        spraying: careModel,
+        feeding: careModel,
+        rotating: careModel,
+      );
 
-      expect(plant.name, "");
-      expect(plant.notes, "Notes");
-    });
-
-    test('Plant with id, name and notes', () {
-      final plant = PlantModel(id: "1", name: "Kaktus", notes: "Ni obcutljiv");
-
-      expect(plant.id, "1");
-      expect(plant.notes, "Ni obcutljiv");
+      expect(plant.id, id);
+      expect(plant.name, 'Kaktus');
+      expect(plant.notes, 'Ni obcutljiv');
+      // Are not same instance
+      expect(plant.watering, isNot(same(careModel)));
+      expect(plant.spraying, isNot(same(careModel)));
+      expect(plant.feeding, isNot(same(careModel)));
+      expect(plant.rotating, isNot(same(careModel)));
+      // Are equals
+      expect(plant.watering, careModel);
+      expect(plant.spraying, careModel);
+      expect(plant.feeding, careModel);
+      expect(plant.rotating, careModel);
     });
 
     test('Clone', () {
-      final plant = PlantModel(name: "Kokos", notes: "Arrrrrr");
+      final plant = PlantModel(name: 'Kokos', notes: 'Arrrrrr');
       final clonePlant = plant.clone();
 
-      expect(clonePlant, isNot(plant));
-      expect(clonePlant.id, plant.id);
-      expect(clonePlant.name, plant.name);
-      expect(clonePlant.notes, plant.notes);
-    });
-
-    test('Get id', () {
-      final plant = PlantModel(id: "42069");
-
-      expect(plant.id, "42069");
-    });
-
-    test('Get name', () {
-      final plant = PlantModel(name: "banana");
-
-      expect(plant.name, "banana");
-    });
-
-    test('Get notes', () {
-      final plant = PlantModel(notes: "Cudni tegl");
-
-      expect(plant.notes, "Cudni tegl");
+      // Is not same instance
+      expect(clonePlant, isNot(same(plant)));
+      // Are equals
+      expect(clonePlant, plant);
+      // Are not same instance
+      expect(clonePlant.watering, isNot(same(plant.watering)));
+      expect(clonePlant.spraying, isNot(same(plant.spraying)));
+      expect(clonePlant.feeding, isNot(same(plant.feeding)));
+      expect(clonePlant.rotating, isNot(same(plant.rotating)));
     });
 
     test('Set name', () {
       final plant = PlantModel();
-      plant.name = "Hasagi";
+      plant.name = 'Hasagi';
 
-      expect(plant.name, "Hasagi");
+      expect(plant.name, 'Hasagi');
     });
 
     test('Set notes', () {
       final plant = PlantModel();
+      plant.notes = 'Water lightly';
 
-      plant.notes = "Sup dude";
-      expect(plant.notes, "Sup dude");
-    });
-
-    test('Set plant watering period', () {
-      final plant = PlantModel();
-      plant.watering.period = 3;
-
-      expect(plant.watering.period, 3);
+      expect(plant.notes, 'Water lightly');
     });
   });
 
   group('PlantCareModel', () {
-    test('Constructor', () {
-      final plantCare =
-          PlantCareModel(period: 14, last: DateTime.utc(1999, 8, 13));
+    test('Default constructor', () {
+      final plantCare = PlantCareModel();
 
-      expect(plantCare.period, 14);
-      expect(plantCare.last.month, 8);
+      expect(plantCare.period, isNull);
+      expect(plantCare.last, isToday);
     });
 
-    test('Negative period in constructor, expecting exception', () {
+    test('Constructor with parameters', () {
+      final plantCare = PlantCareModel(
+        period: 14,
+        last: DateTime.utc(1999, 8, 13),
+      );
+
+      expect(plantCare.period, 14);
+      expect(plantCare.last, DateTime.utc(1999, 8, 13));
+    });
+
+    test('Invalid period in constructor, expecting exception', () {
       expect(() => PlantCareModel(period: -20), throwsArgumentError);
+      expect(() => PlantCareModel(period: 0), throwsArgumentError);
     });
 
     test('Last date in future, expecting exception', () {
@@ -102,38 +116,25 @@ void main() {
       final plantCareModel = PlantCareModel(period: 69, last: DateTime.now());
       final clone = plantCareModel.clone();
 
-      expect(clone, isNot(plantCareModel));
-      expect(clone.period, plantCareModel.period);
-      expect(clone.last, plantCareModel.last);
+      expect(clone, isNot(same(plantCareModel)));
+      expect(clone, plantCareModel);
     });
 
     test('Update last', () {
-      final plantCare =
-          PlantCareModel(period: 1, last: DateTime.utc(2021, 1, 1));
+      final plantCare = PlantCareModel(
+        period: 1,
+        last: DateTime.utc(2021, 1, 1),
+      );
 
       plantCare.updateLast();
 
-      expect(plantCare.last.month, DateTime.now().month);
-      expect(plantCare.last.day, DateTime.now().day);
-    });
-
-    test('Get period', () {
-      final plantCare = PlantCareModel(period: 5);
-
-      expect(plantCare.period, 5);
-    });
-
-    test('Get last', () {
-      final plantCare = PlantCareModel(last: DateTime(2021, 4, 5));
-
-      expect(plantCare.last, DateTime(2021, 4, 5));
+      expect(plantCare.last, isToday);
     });
 
     test('Days till care, period null', () {
-      final care = PlantCareModel();
-      final days = care.daysTillCare;
+      final care = PlantCareModel(period: null);
 
-      expect(days, null);
+      expect(care.daysTillCare, null);
     });
 
     test('Days till care, period 5, last now', () {
@@ -179,10 +180,11 @@ void main() {
       expect(care.period, 21);
     });
 
-    test('Set period negative, expecting exception', () {
+    test('Set period invalid, expecting exception', () {
       final care = PlantCareModel();
 
       expect(() => care.period = -21, throwsArgumentError);
+      expect(() => care.period = 0, throwsArgumentError);
     });
   });
 
@@ -192,8 +194,8 @@ void main() {
       final careModel = PlantCareModel();
       final actualJson = PlantModel(
         id: id,
-        name: "Orhideja",
-        notes: "Jakobova rozica",
+        name: 'Orhideja',
+        notes: 'Jakobova rozica',
         watering: careModel,
         spraying: careModel,
         feeding: careModel,

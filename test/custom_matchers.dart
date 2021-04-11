@@ -13,12 +13,8 @@ class _IsToday extends Matcher {
   bool matches(item, Map matchState) {
     final now = DateTime.now();
     final it = item as DateTime;
-    if (now.day != it.day) {
-      return false;
-    }
-    if (now.month != it.month) {
-      return false;
-    }
+    if (now.day != it.day) return false;
+    if (now.month != it.month) return false;
     return now.year == it.year;
   }
 }

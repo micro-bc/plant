@@ -1,7 +1,8 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
-class PlantModel extends ChangeNotifier {
+class PlantModel extends ChangeNotifier with EquatableMixin {
   String _id;
   String _name;
   String _notes;
@@ -10,6 +11,10 @@ class PlantModel extends ChangeNotifier {
   PlantCareModel _spraying;
   PlantCareModel _feeding;
   PlantCareModel _rotating;
+
+  @override
+  List<Object?> get props =>
+      [_id, _name, _notes, _watering, _spraying, _feeding, _rotating];
 
   PlantModel({
     String? id,
@@ -22,10 +27,10 @@ class PlantModel extends ChangeNotifier {
   })  : _id = id ?? Uuid().v4(),
         _name = name ?? "",
         _notes = notes ?? "",
-        _watering = watering ?? PlantCareModel(),
-        _spraying = spraying ?? PlantCareModel(),
-        _feeding = feeding ?? PlantCareModel(),
-        _rotating = rotating ?? PlantCareModel() {
+        _watering = watering?.clone() ?? PlantCareModel(),
+        _spraying = spraying?.clone() ?? PlantCareModel(),
+        _feeding = feeding?.clone() ?? PlantCareModel(),
+        _rotating = rotating?.clone() ?? PlantCareModel() {
     _watering.addListener(notifyListeners);
     _spraying.addListener(notifyListeners);
     _feeding.addListener(notifyListeners);
@@ -91,9 +96,12 @@ class PlantModel extends ChangeNotifier {
   }
 }
 
-class PlantCareModel extends ChangeNotifier {
+class PlantCareModel extends ChangeNotifier with EquatableMixin {
   int? _period;
   DateTime _last;
+
+  @override
+  List<Object?> get props => [_period, _last];
 
   PlantCareModel({
     int? period,
