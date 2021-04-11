@@ -10,8 +10,8 @@ void main() {
       final plant = PlantModel();
 
       expect(Uuid.isValidUUID(plant.id), isTrue);
-      expect(plant.name, '');
-      expect(plant.notes, '');
+      expect(plant.name, isEmpty);
+      expect(plant.notes, isEmpty);
       // Are not same instance
       expect(plant.watering, isNot(same(plant.spraying)));
       expect(plant.watering, isNot(same(plant.feeding)));
