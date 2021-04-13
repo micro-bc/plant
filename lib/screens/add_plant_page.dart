@@ -65,6 +65,7 @@ class _AddPlantForm extends StatelessWidget {
                 title: 'Apperance',
                 children: [
                   TextFormField(
+                    key: Key('plantName'),
                     decoration: const InputDecoration(
                       labelText: 'Name',
                       hintText: 'My plant',
@@ -81,6 +82,7 @@ class _AddPlantForm extends StatelessWidget {
                 title: 'Periodic care',
                 children: [
                   _CareInput(
+                    key: Key('wateringCareInput'),
                     careModel: plant.watering,
                     leading: Icon(
                       CareIcons.water,
@@ -118,6 +120,7 @@ class _AddPlantForm extends StatelessWidget {
                 title: 'Other',
                 children: [
                   TextFormField(
+                    key: Key('plantNotes'),
                     decoration: const InputDecoration(labelText: 'Notes'),
                     maxLines: null,
                     initialValue: plant.notes,
@@ -167,6 +170,7 @@ class _CareInput extends StatelessWidget {
                           ? 'every day'
                           : 'every ${careModel.period} days',
                       textScaleFactor: 1.2,
+                      key: Key('periodText'),
                     ),
                   Switch(
                     value: careModel.period != null,
