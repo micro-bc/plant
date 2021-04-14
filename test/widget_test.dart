@@ -25,25 +25,30 @@ void main() {
       expect(titleText, findsOneWidget);
     });
 
-    /*testWidgets('Open add_plant_page', (WidgetTester tester) async {
-
+    testWidgets('Open AddPlantPage', (WidgetTester tester) async {
       final mockObserver = MockNavigatorObserver();
       final addButton = find.byKey(ValueKey("addButton"));
 
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (context) => PlantsModel(),
-          child: MaterialApp(home: HomePage(), navigatorObservers: [mockObserver]),
+          child: MaterialApp(
+            home: HomePage(),
+            routes: <String, WidgetBuilder>{
+              '/add': (context) => AddPlantPage(),
+            },
+            navigatorObservers: [mockObserver],
+          ),
         ),
       );
 
       await tester.tap(addButton);
-      //await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
 
-      //verify(mockObserver.didPush(any, any));
+      verify(mockObserver.navigator?.pushNamed('/add')).called(1);
 
       expect(find.byType(AddPlantPage), findsOneWidget);
-    });*/
+    });
   });
 
   group('Add plant page', () {
