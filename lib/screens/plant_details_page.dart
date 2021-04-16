@@ -14,7 +14,11 @@ class PlantDetailsPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
-            onPressed: () {},
+            onPressed: () => Navigator.pushNamed(context, '/edit',
+                    arguments: context.read<PlantModel>())
+                .then((value) {
+              if (value as bool? ?? false) Navigator.pop(context);
+            }),
           ),
           IconButton(
             icon: const Icon(Icons.delete),
