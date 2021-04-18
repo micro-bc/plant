@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:plant/components/select_plant.dart';
 import 'package:plant/models/plant.dart';
 import 'package:plant/utils/care_icons.dart';
 import 'package:provider/provider.dart';
@@ -15,6 +16,7 @@ class PlantForm extends StatelessWidget {
               _FormGroup(
                 title: 'Apperance',
                 children: [
+                  SelectPlant(),
                   TextFormField(
                     decoration: const InputDecoration(
                       labelText: 'Name',

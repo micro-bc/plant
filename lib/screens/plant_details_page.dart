@@ -65,7 +65,7 @@ class _PlantDetails extends StatelessWidget {
           padding: const EdgeInsets.all(20.0),
           child: ListView(
             children: [
-              Image.asset('assets/plant1.png', height: 150),
+              Image(image: plant.type.getImage(), height: 150),
               Center(
                 child: Padding(
                   padding: const EdgeInsets.all(15.0),
