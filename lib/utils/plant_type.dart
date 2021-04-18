@@ -11,6 +11,8 @@ class PlantType {
     PLANT3,
   ];
 
+  static PlantType get defaultValue => PLANT1;
+
   static PlantType? getByName(String name) {
     final a = values.where((element) => element.name == name);
     return a.length == 1 ? a.first : null;

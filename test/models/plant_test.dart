@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plant/models/plant.dart';
+import 'package:plant/utils/plant_type.dart';
 import 'package:uuid/uuid.dart';
 
 import '../custom_matchers.dart';
@@ -12,6 +13,7 @@ void main() {
       expect(Uuid.isValidUUID(plant.id), isTrue);
       expect(plant.name, isEmpty);
       expect(plant.notes, isEmpty);
+      expect(plant.type, same(PlantType.defaultValue));
       // Are not same instance
       expect(plant.watering, isNot(same(plant.spraying)));
       expect(plant.watering, isNot(same(plant.feeding)));
@@ -28,10 +30,12 @@ void main() {
     test('Constructor with parameters', () {
       final id = Uuid().v4();
       final careModel = PlantCareModel(period: 5);
+      final type = PlantType.PLANT2;
       final plant = PlantModel(
         id: id,
         name: 'Kaktus',
         notes: 'Ni obcutljiv',
+        type: type,
         watering: careModel,
         spraying: careModel,
         feeding: careModel,
@@ -41,6 +45,7 @@ void main() {
       expect(plant.id, id);
       expect(plant.name, 'Kaktus');
       expect(plant.notes, 'Ni obcutljiv');
+      expect(plant.type, same(type));
       // Are not same instance
       expect(plant.watering, isNot(same(careModel)));
       expect(plant.spraying, isNot(same(careModel)));
@@ -61,6 +66,7 @@ void main() {
       expect(clonePlant, isNot(same(plant)));
       // Are equals
       expect(clonePlant, plant);
+      expect(clonePlant.type, same(plant.type));
       // Are not same instance
       expect(clonePlant.watering, isNot(same(plant.watering)));
       expect(clonePlant.spraying, isNot(same(plant.spraying)));
@@ -80,6 +86,13 @@ void main() {
       plant.notes = 'Water lightly';
 
       expect(plant.notes, 'Water lightly');
+    });
+
+    test('Set type', () {
+      final plant = PlantModel();
+      plant.type = PlantType.PLANT3;
+
+      expect(plant.type, same(PlantType.PLANT3));
     });
   });
 
@@ -192,10 +205,12 @@ void main() {
     test('PlantModel toJson', () {
       final id = Uuid().v4();
       final careModel = PlantCareModel();
+      final type = PlantType.PLANT2;
       final actualJson = PlantModel(
         id: id,
         name: 'Orhideja',
         notes: 'Jakobova rozica',
+        type: type,
         watering: careModel,
         spraying: careModel,
         feeding: careModel,
@@ -205,6 +220,7 @@ void main() {
         'id': id,
         'name': 'Orhideja',
         'notes': 'Jakobova rozica',
+        'type': type.toJson(),
         'watering': careModel.toJson(),
         'spraying': careModel.toJson(),
         'feeding': careModel.toJson(),
@@ -231,10 +247,12 @@ void main() {
     test('PlantModel fromJson', () {
       final id = Uuid().v4();
       final plantCare = PlantCareModel(period: 21);
+      final type = PlantType.PLANT2;
       final plant = PlantModel.fromJson({
         'id': id,
         'name': 'Orhideja',
         'notes': 'Jakobova rozica',
+        'type': type.toJson(),
         'watering': plantCare.toJson(),
         'spraying': plantCare.toJson(),
         'feeding': plantCare.toJson(),
@@ -244,6 +262,7 @@ void main() {
       expect(plant.id, id);
       expect(plant.name, 'Orhideja');
       expect(plant.notes, 'Jakobova rozica');
+      expect(plant.type, same(type));
       expect(plant.watering.period, 21);
       expect(plant.spraying.period, 21);
       expect(plant.feeding.period, 21);
@@ -266,6 +285,7 @@ void main() {
       expect(plant.id, isNotNull);
       expect(plant.name, isEmpty);
       expect(plant.notes, isEmpty);
+      expect(plant.type, same(PlantType.defaultValue));
       expect(plant.watering, isInstanceOf<PlantCareModel>());
       expect(plant.spraying, isInstanceOf<PlantCareModel>());
       expect(plant.feeding, isInstanceOf<PlantCareModel>());

@@ -24,7 +24,7 @@ class PlantModel extends ChangeNotifier with EquatableMixin {
   })  : _id = id ?? Uuid().v4(),
         _name = name ?? "",
         _notes = notes ?? "",
-        _type = type ?? PlantType.PLANT1,
+        _type = type ?? PlantType.defaultValue,
         _watering = watering?.clone() ?? PlantCareModel(),
         _spraying = spraying?.clone() ?? PlantCareModel(),
         _feeding = feeding?.clone() ?? PlantCareModel(),
