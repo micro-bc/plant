@@ -4,11 +4,13 @@ class PlantType {
   static const PLANT1 = PlantType._('Type 1', 'assets/plant1.png');
   static const PLANT2 = PlantType._('Type 2', 'assets/plant2.png');
   static const PLANT3 = PlantType._('Type 3', 'assets/plant3.png');
+  static const CACTUS = PlantType._('Cactus', 'assets/cactus.png');
 
   static const values = <PlantType>[
     PLANT1,
     PLANT2,
     PLANT3,
+    CACTUS,
   ];
 
   static PlantType get defaultValue => PLANT1;
