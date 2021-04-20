@@ -2,10 +2,12 @@ import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 import 'package:plant/models/plant.dart';
-import 'package:plant/utils/plant_storage.dart';
 
 class PlantsModel extends ChangeNotifier {
   final Map<String, PlantModel> _plants = {};
+
+  void Function(PlantModel) onAdd = (plant) {};
+  void Function(String) onRemove = (id) {};
 
   PlantsModel();
 
@@ -18,16 +20,13 @@ class PlantsModel extends ChangeNotifier {
 
   void add(PlantModel plant) {
     _plants[plant.id] = plant;
-    _onChange();
+    onAdd(plant);
+    notifyListeners();
   }
 
   void remove(String id) {
     _plants.remove(id);
-    _onChange();
-  }
-
-  void _onChange() {
+    onRemove(id);
     notifyListeners();
-    PlantStorage.savePlants(plants);
   }
 }

@@ -15,6 +15,8 @@ Future<void> main() async {
   final notifyFuture = NotificationHelper.init();
   final plantFuture = PlantStorage.getPlants();
 
+  _prepare(await notifyFuture, await plantFuture);
+
   runApp(
     MultiProvider(
       providers: [
@@ -24,6 +26,22 @@ Future<void> main() async {
       child: App(),
     ),
   );
+}
+
+_prepare(NotificationHelper notifyHelper, PlantsModel plants) {
+  // Plant events
+  plants.onAdd = (plant) {
+    PlantStorage.savePlants(plants.plants);
+    notifyHelper.schedulePlant(plant);
+  };
+  plants.onRemove = (id) {
+    PlantStorage.savePlants(plants.plants);
+    notifyHelper.cancel(id);
+  };
+
+  // Reschedule notifications
+  notifyHelper.cancelAll();
+  plants.plants.forEach((plant) => notifyHelper.schedulePlant(plant));
 }
 
 class App extends StatelessWidget {
