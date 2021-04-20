@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:plant/models/plant.dart';
+import 'package:plant/models/plant_care.dart';
 
 class CareInput extends StatelessWidget {
   final Widget leading;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:plant/models/plant.dart';
+import 'package:plant/models/plant_care.dart';
 import 'package:plant/models/plants.dart';
 import 'package:plant/utils/care_icons.dart';
 import 'package:provider/provider.dart';

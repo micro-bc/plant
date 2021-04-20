@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:plant/models/plant_care.dart';
 import 'package:plant/utils/plant_type.dart';
 import 'package:uuid/uuid.dart';
 
@@ -87,6 +88,15 @@ class PlantModel extends ChangeNotifier with EquatableMixin {
   PlantCareModel get feeding => _feeding;
   PlantCareModel get rotating => _rotating;
 
+  List<PlantCareModel> get _allCareModels =>
+      <PlantCareModel>[_watering, _spraying, _feeding, _rotating];
+
+  List<PlantCareModel> get enabledCare =>
+      _allCareModels.where((care) => care.period != null).toList();
+
+  bool get needsCare =>
+      _allCareModels.any((care) => (care.daysTillCare ?? 1) <= 0);
+
   set name(String name) {
     _name = name;
     notifyListeners();
@@ -99,56 +109,6 @@ class PlantModel extends ChangeNotifier with EquatableMixin {
 
   set type(PlantType type) {
     _type = type;
-    notifyListeners();
-  }
-}
-
-class PlantCareModel extends ChangeNotifier with EquatableMixin {
-  int? _period;
-  DateTime _last;
-
-  @override
-  List<Object?> get props => [_period, _last];
-
-  PlantCareModel({
-    int? period,
-    DateTime? last,
-  })  : _period = period,
-        _last = last ?? DateTime.now() {
-    if ((period ?? 1) < 1) throw ArgumentError('Period must be >= 1 or null');
-  }
-
-  PlantCareModel clone() => PlantCareModel(
-        period: _period,
-        last: _last,
-      );
-
-  Map<String, dynamic> toJson() => {
-        'period': _period,
-        'last': _last.toIso8601String(),
-      };
-
-  PlantCareModel.fromJson(Map<String, dynamic> json)
-      : this(
-          period: json['period'],
-          last: json['last'] == null ? null : DateTime.tryParse(json['last']),
-        );
-
-  void updateLast() {
-    _last = DateTime.now();
-    notifyListeners();
-  }
-
-  int? get period => _period;
-  DateTime get last => _last;
-  int? get daysTillCare => _period == null
-      ? null
-      : _last.add(Duration(days: _period!)).difference(DateTime.now()).inDays +
-          1;
-
-  set period(int? period) {
-    if ((period ?? 1) < 1) throw ArgumentError('Period must be >= 1 or null');
-    _period = period;
     notifyListeners();
   }
 }
