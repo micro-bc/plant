@@ -37,6 +37,7 @@ class CareInput extends StatelessWidget {
                           ? 'every day'
                           : 'every ${careModel.period} days',
                       textScaleFactor: 1.2,
+                      key: Key('periodText'),
                     ),
                   Switch(
                     value: careModel.period != null,

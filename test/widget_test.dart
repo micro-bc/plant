@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:plant/components/care_input.dart';
 import 'package:plant/models/plant.dart';
 import 'package:plant/models/plants.dart';
 import 'package:plant/screens/add_plant_page.dart';
@@ -135,7 +136,7 @@ void main() {
         ),
       );
 
-      final wateringInput = find.byKey(ValueKey("wateringCareInput"));
+      final wateringInput = find.byType(CareInput).first;
       await tester.tap(wateringInput);
       await tester.pump();
 
@@ -150,7 +151,8 @@ void main() {
         ),
       );
 
-      final wateringInput = find.byKey(ValueKey("wateringCareInput"));
+      final wateringInput = find.byType(CareInput).first;
+
       await tester.tap(wateringInput);
       await tester.pump();
 
