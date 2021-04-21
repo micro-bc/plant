@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:plant/models/plant.dart';
+import 'package:plant/models/plant_care.dart';
 import 'package:plant/models/plants.dart';
 import 'package:plant/utils/care_icons.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +15,11 @@ class PlantDetailsPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
-            onPressed: () {},
+            onPressed: () => Navigator.pushNamed(context, '/edit',
+                    arguments: context.read<PlantModel>())
+                .then((value) {
+              if (value as bool? ?? false) Navigator.pop(context);
+            }),
           ),
           IconButton(
             icon: const Icon(Icons.delete),
@@ -61,7 +66,7 @@ class _PlantDetails extends StatelessWidget {
           padding: const EdgeInsets.all(20.0),
           child: ListView(
             children: [
-              Image.asset('assets/icon/app_icon.png', height: 150),
+              Image(image: plant.type.getImage(), height: 150),
               Center(
                 child: Padding(
                   padding: const EdgeInsets.all(15.0),

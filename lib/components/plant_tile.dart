@@ -16,7 +16,7 @@ class PlantTile extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
-              Image.asset('assets/icon/app_icon.png', height: 90),
+              Image(image: plant.type.getImage(), height: 90),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(15.0),

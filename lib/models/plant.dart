@@ -1,25 +1,23 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:plant/models/plant_care.dart';
+import 'package:plant/utils/plant_type.dart';
 import 'package:uuid/uuid.dart';
 
 class PlantModel extends ChangeNotifier with EquatableMixin {
-  String _id;
-  String _name;
-  String _notes;
-
-  PlantCareModel _watering;
-  PlantCareModel _spraying;
-  PlantCareModel _feeding;
-  PlantCareModel _rotating;
+  String _id, _name, _notes;
+  PlantType _type;
+  PlantCareModel _watering, _spraying, _feeding, _rotating;
 
   @override
   List<Object?> get props =>
-      [_id, _name, _notes, _watering, _spraying, _feeding, _rotating];
+      [_id, _name, _notes, _type, _watering, _spraying, _feeding, _rotating];
 
   PlantModel({
     String? id,
     String? name,
     String? notes,
+    PlantType? type,
     PlantCareModel? watering,
     PlantCareModel? spraying,
     PlantCareModel? feeding,
@@ -27,6 +25,7 @@ class PlantModel extends ChangeNotifier with EquatableMixin {
   })  : _id = id ?? Uuid().v4(),
         _name = name ?? "",
         _notes = notes ?? "",
+        _type = type ?? PlantType.defaultValue,
         _watering = watering?.clone() ?? PlantCareModel(),
         _spraying = spraying?.clone() ?? PlantCareModel(),
         _feeding = feeding?.clone() ?? PlantCareModel(),
@@ -41,6 +40,7 @@ class PlantModel extends ChangeNotifier with EquatableMixin {
         id: _id,
         name: _name,
         notes: _notes,
+        type: _type,
         watering: _watering.clone(),
         spraying: _spraying.clone(),
         feeding: _feeding.clone(),
@@ -51,6 +51,7 @@ class PlantModel extends ChangeNotifier with EquatableMixin {
         'id': _id,
         'name': _name,
         'notes': _notes,
+        'type': _type.toJson(),
         'watering': _watering.toJson(),
         'spraying': _spraying.toJson(),
         'feeding': _feeding.toJson(),
@@ -62,6 +63,7 @@ class PlantModel extends ChangeNotifier with EquatableMixin {
           id: map['id'],
           name: map['name'],
           notes: map['notes'],
+          type: map['type'] == null ? null : PlantType.getByName(map['type']),
           watering: map['watering'] == null
               ? null
               : PlantCareModel.fromJson(map['watering']),
@@ -79,11 +81,21 @@ class PlantModel extends ChangeNotifier with EquatableMixin {
   String get id => _id;
   String get name => _name;
   String get notes => _notes;
+  PlantType get type => _type;
 
   PlantCareModel get watering => _watering;
   PlantCareModel get spraying => _spraying;
   PlantCareModel get feeding => _feeding;
   PlantCareModel get rotating => _rotating;
+
+  List<PlantCareModel> get _allCareModels =>
+      <PlantCareModel>[_watering, _spraying, _feeding, _rotating];
+
+  List<PlantCareModel> get enabledCare =>
+      _allCareModels.where((care) => care.period != null).toList();
+
+  bool get needsCare =>
+      _allCareModels.any((care) => (care.daysTillCare ?? 1) <= 0);
 
   set name(String name) {
     _name = name;
@@ -94,54 +106,9 @@ class PlantModel extends ChangeNotifier with EquatableMixin {
     _notes = notes;
     notifyListeners();
   }
-}
 
-class PlantCareModel extends ChangeNotifier with EquatableMixin {
-  int? _period;
-  DateTime _last;
-
-  @override
-  List<Object?> get props => [_period, _last];
-
-  PlantCareModel({
-    int? period,
-    DateTime? last,
-  })  : _period = period,
-        _last = last ?? DateTime.now() {
-    if ((period ?? 1) < 1) throw ArgumentError('Period must be >= 1 or null');
-  }
-
-  PlantCareModel clone() => PlantCareModel(
-        period: _period,
-        last: _last,
-      );
-
-  Map<String, dynamic> toJson() => {
-        'period': _period,
-        'last': _last.toIso8601String(),
-      };
-
-  PlantCareModel.fromJson(Map<String, dynamic> json)
-      : this(
-          period: json['period'],
-          last: json['last'] == null ? null : DateTime.tryParse(json['last']),
-        );
-
-  void updateLast() {
-    _last = DateTime.now();
-    notifyListeners();
-  }
-
-  int? get period => _period;
-  DateTime get last => _last;
-  int? get daysTillCare => _period == null
-      ? null
-      : _last.add(Duration(days: _period!)).difference(DateTime.now()).inDays +
-          1;
-
-  set period(int? period) {
-    if ((period ?? 1) < 1) throw ArgumentError('Period must be >= 1 or null');
-    _period = period;
+  set type(PlantType type) {
+    _type = type;
     notifyListeners();
   }
 }
