@@ -18,6 +18,7 @@ class PlantForm extends StatelessWidget {
                 children: [
                   SelectPlant(),
                   TextFormField(
+                    key: Key('form_name'),
                     decoration: const InputDecoration(
                       labelText: 'Name',
                       hintText: 'My plant',
@@ -34,36 +35,36 @@ class PlantForm extends StatelessWidget {
                 title: 'Periodic care',
                 children: [
                   CareInput(
+                    name: 'Watering',
                     careModel: plant.watering,
                     leading: Icon(
                       CareIcons.water,
                       color: Colors.blue[400],
                     ),
-                    name: 'Watering',
                   ),
                   CareInput(
+                    name: 'Spraying',
                     careModel: plant.spraying,
                     leading: Icon(
                       CareIcons.spray,
                       color: Colors.green[400],
                     ),
-                    name: 'Spraying',
                   ),
                   CareInput(
+                    name: 'Feeding',
                     careModel: plant.feeding,
                     leading: Icon(
                       CareIcons.feed,
                       color: Colors.brown[400],
                     ),
-                    name: 'Feeding',
                   ),
                   CareInput(
+                    name: 'Rotate',
                     careModel: plant.rotating,
                     leading: Icon(
                       CareIcons.rotate,
                       color: Colors.purple[400],
                     ),
-                    name: 'Rotate',
                   ),
                 ],
               ),
@@ -71,6 +72,7 @@ class PlantForm extends StatelessWidget {
                 title: 'Other',
                 children: [
                   TextFormField(
+                    key: Key('form_notes'),
                     decoration: const InputDecoration(labelText: 'Notes'),
                     maxLines: null,
                     initialValue: plant.notes,

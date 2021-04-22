@@ -13,7 +13,6 @@ class HomePage extends StatelessWidget {
           IconButton(
             onPressed: () => Navigator.pushNamed(context, '/add'),
             icon: const Icon(Icons.add_circle_outline),
-            key: Key('addButton'),
           ),
         ],
       ),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plant/components/care_input.dart';
+import 'package:plant/components/plant_form.dart';
+import 'package:plant/components/plant_tile.dart';
 import 'package:plant/models/plant.dart';
+import 'package:plant/models/plant_care.dart';
 import 'package:plant/models/plants.dart';
 import 'package:plant/screens/add_plant_page.dart';
 import 'package:plant/screens/home_page.dart';
@@ -20,15 +23,13 @@ void main() {
         ),
       );
 
-      final titleText = find.text("Plant");
-
-      expect(find.byType(IconButton), findsNWidgets(2));
-      expect(titleText, findsOneWidget);
+      expect(find.byType(PlantTile), findsNothing);
+      expect(find.byIcon(Icons.add_circle_outline), findsOneWidget);
     });
 
     testWidgets('Open AddPlantPage', (WidgetTester tester) async {
       final mockObserver = MockNavigatorObserver();
-      final addButton = find.byKey(ValueKey("addButton"));
+      final addButton = find.byIcon(Icons.add_circle_outline);
 
       await tester.pumpWidget(
         ChangeNotifierProvider(
@@ -43,6 +44,7 @@ void main() {
         ),
       );
 
+      expect(addButton, findsOneWidget);
       await tester.tap(addButton);
       await tester.pumpAndSettle();
 
@@ -52,7 +54,7 @@ void main() {
     });
   });
 
-  group('Add plant page', () {
+  group('AddPlantPage', () {
     testWidgets('Empty add plant page', (WidgetTester tester) async {
       await tester.pumpWidget(
         ChangeNotifierProvider(
@@ -61,120 +63,169 @@ void main() {
         ),
       );
 
-      final titleText = find.text("Add Plant");
-      final apperanceText = find.text("Apperance");
-      final nameText = find.text("Name");
-      final periodicCareText = find.text("Periodic care");
-      final wateringText = find.text("Watering");
-      final sprayingText = find.text("Spraying");
-      final feedingText = find.text("Feeding");
-      final rotateText = find.text("Rotate");
-      final otherText = find.text("Other");
-      final notesText = find.text("Notes");
-
-      expect(titleText, findsOneWidget);
-      expect(apperanceText, findsOneWidget);
-      expect(nameText, findsOneWidget);
-      expect(periodicCareText, findsOneWidget);
-      expect(wateringText, findsOneWidget);
-      expect(sprayingText, findsOneWidget);
-      expect(feedingText, findsOneWidget);
-      expect(rotateText, findsOneWidget);
-      expect(otherText, findsOneWidget);
-      expect(notesText, findsOneWidget);
+      expect(find.byIcon(Icons.check), findsOneWidget);
+      expect(find.byType(PlantForm), findsOneWidget);
     });
 
-    testWidgets('On tap apperance show My plant text',
-        (WidgetTester tester) async {
+    testWidgets('Add empty plant', (WidgetTester tester) async {
+      final plants = PlantsModel();
+      final mockObserver = MockNavigatorObserver();
+
       await tester.pumpWidget(
-        ChangeNotifierProvider(
-          create: (context) => PlantModel(),
-          child: MaterialApp(home: AddPlantPage()),
+        ChangeNotifierProvider.value(
+          value: plants,
+          child: MaterialApp(
+            home: AddPlantPage(),
+            navigatorObservers: [mockObserver],
+          ),
         ),
       );
 
-      final textField = find.byKey(ValueKey("plantName"));
-      await tester.tap(textField);
+      await tester.tap(find.byIcon(Icons.check));
+      await tester.pumpAndSettle();
 
-      final myPlantText = find.text("My plant");
-      expect(myPlantText, findsOneWidget);
+      verify(mockObserver.navigator?.pop()).called(1);
+
+      expect(plants.plants.length, 1);
     });
+  });
 
-    testWidgets('Enter plant name', (WidgetTester tester) async {
+  group('PlantForm', () {
+    testWidgets('Enter name', (WidgetTester tester) async {
+      final plant = PlantModel();
       await tester.pumpWidget(
-        ChangeNotifierProvider(
-          create: (context) => PlantModel(),
-          child: MaterialApp(home: AddPlantPage()),
+        MaterialApp(
+          home: ChangeNotifierProvider.value(
+            value: plant,
+            child: PlantForm(),
+          ),
         ),
       );
 
-      final textField = find.byKey(ValueKey("plantName"));
-      await tester.enterText(textField, "Kaktus");
+      await tester.enterText(find.byKey(Key('form_name')), 'Kaktus');
 
-      expect(find.text("Kaktus"), findsOneWidget);
+      expect(plant.name, 'Kaktus');
     });
 
     testWidgets('Enter notes', (WidgetTester tester) async {
+      final plant = PlantModel();
       await tester.pumpWidget(
-        ChangeNotifierProvider(
-          create: (context) => PlantModel(),
-          child: MaterialApp(home: AddPlantPage()),
+        MaterialApp(
+          home: ChangeNotifierProvider.value(
+            value: plant,
+            child: PlantForm(),
+          ),
         ),
       );
 
-      final textField = find.byKey(ValueKey("plantNotes"));
-      await tester.enterText(textField, "Obcutljiva rastlina");
+      await tester.enterText(find.byKey(Key('form_notes')), 'Zelo obcutljiva');
 
-      expect(find.text("Obcutljiva rastlina"), findsOneWidget);
+      expect(plant.notes, 'Zelo obcutljiva');
     });
 
-    testWidgets('Enable watering period', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        ChangeNotifierProvider(
-          create: (context) => PlantModel(),
-          child: MaterialApp(home: AddPlantPage()),
-        ),
-      );
+    group('CareInput', () {
+      testWidgets('Default', (WidgetTester tester) async {
+        final careModel = PlantCareModel();
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CareInput(
+                leading: Icon(Icons.opacity),
+                name: 'Watering',
+                careModel: careModel,
+              ),
+            ),
+          ),
+        );
 
-      final wateringInput = find.byType(CareInput).first;
-      await tester.tap(wateringInput);
-      await tester.pump();
+        expect(find.byIcon(Icons.opacity), findsOneWidget);
+        expect(find.text('Watering'), findsOneWidget);
+        expect(find.byType(Slider), findsNothing);
+        expect(find.byType(Switch), findsOneWidget);
+      });
 
-      expect(find.text("every day"), findsOneWidget);
-    });
+      testWidgets('Enabled', (WidgetTester tester) async {
+        final careModel = PlantCareModel(period: 2);
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CareInput(
+                leading: Icon(Icons.opacity),
+                name: 'Watering',
+                careModel: careModel,
+              ),
+            ),
+          ),
+        );
 
-    testWidgets('Set watering period', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        ChangeNotifierProvider(
-          create: (context) => PlantModel(),
-          child: MaterialApp(home: AddPlantPage()),
-        ),
-      );
+        expect(find.byIcon(Icons.opacity), findsOneWidget);
+        expect(find.text('Watering'), findsOneWidget);
+        expect(find.textContaining('2'), findsOneWidget);
+        expect(find.byType(Slider), findsOneWidget);
+        expect(find.byType(Switch), findsOneWidget);
+      });
 
-      final wateringInput = find.byType(CareInput).first;
+      testWidgets('Enable', (WidgetTester tester) async {
+        final careModel = PlantCareModel();
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CareInput(
+                leading: Icon(Icons.opacity),
+                name: 'Watering',
+                careModel: careModel,
+              ),
+            ),
+          ),
+        );
 
-      await tester.tap(wateringInput);
-      await tester.pump();
+        await tester.tap(find.byType(Switch));
+        await tester.pumpAndSettle();
+        await tester.pumpAndSettle(Duration(seconds: 1));
 
-      expect(find.text("every day"), findsOneWidget);
+        expect(careModel.period, 1);
+        expect(find.byType(Slider), findsOneWidget);
+      });
 
-      final slider = find.byType(Slider);
+      testWidgets('Disable', (WidgetTester tester) async {
+        final careModel = PlantCareModel(period: 2);
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CareInput(
+                leading: Icon(Icons.opacity),
+                name: 'Watering',
+                careModel: careModel,
+              ),
+            ),
+          ),
+        );
 
-      await tester.drag(slider, Offset(200, 0));
-      await tester.pump();
+        await tester.tap(find.byType(Switch));
+        await tester.pumpAndSettle();
+        await tester.pumpAndSettle(Duration(seconds: 1));
 
-      final text = find.byKey(ValueKey('periodText')).toString();
-      final ogText = text;
-      print(ogText);
+        expect(careModel.period, null);
+        expect(find.byType(Slider), findsNothing);
+      });
 
-      expect(text, isNot("every day"));
+      testWidgets('Increase period', (WidgetTester tester) async {
+        final careModel = PlantCareModel(period: 1);
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CareInput(
+                leading: Icon(Icons.opacity),
+                name: 'Watering',
+                careModel: careModel,
+              ),
+            ),
+          ),
+        );
 
-      await tester.drag(slider, Offset(200, 0));
-      await tester.pump();
-      final textToCompare = find.byKey(ValueKey('periodText')).toString();
-      print(textToCompare);
-
-      expect(textToCompare, isNot(ogText));
+        await tester.drag(find.byType(Slider), Offset(0, 30));
+        expect(careModel.period, greaterThan(1));
+      });
     });
   });
 }
