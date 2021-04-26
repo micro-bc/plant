@@ -75,10 +75,10 @@ void main() {
     expect(care.daysTillCare, 4);
   });
 
-  test('Days till care, period 5, last 6 days ago', () {
+  test('Days till care, period 5, last 5 days ago', () {
     final care = PlantCareModel(
       period: 5,
-      last: DateTime.now().subtract(Duration(seconds: 10, days: 6)),
+      last: DateTime.now().subtract(Duration(seconds: 10, days: 5)),
     );
 
     expect(care.daysTillCare, 0);

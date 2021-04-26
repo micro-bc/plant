@@ -98,7 +98,7 @@ void main() {
 
   test('Get needs care, expect false', () {
     final careModel = PlantCareModel(
-      period: 2,
+      period: 3,
       last: DateTime.now().subtract(Duration(days: 1)),
     );
     final plant = PlantModel(watering: careModel);

@@ -95,8 +95,8 @@ class PlantModel extends ChangeNotifier with EquatableMixin {
   List<PlantCareModel> get enabledCare =>
       _allCareModels.where((care) => care.period != null).toList();
 
-  bool get needsCare =>
-      _allCareModels.any((care) => (care.daysTillCare ?? 1) <= 0);
+  bool get needsCare => _allCareModels
+      .any((care) => care.nextCare?.isBefore(DateTime.now()) ?? false);
 
   set name(String name) {
     _name = name;

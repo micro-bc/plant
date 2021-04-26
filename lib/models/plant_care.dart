@@ -43,8 +43,10 @@ class PlantCareModel extends ChangeNotifier with EquatableMixin {
   DateTime? get nextCare =>
       _period == null ? null : _last.add(Duration(days: _period!));
 
-  int? get daysTillCare =>
-      _period == null ? null : nextCare!.difference(DateTime.now()).inDays + 1;
+  int? get daysTillCare => nextCare
+      ?.add(const Duration(hours: 12))
+      .difference(DateTime.now())
+      .inDays;
 
   set period(int? period) {
     if ((period ?? 1) < 1) throw ArgumentError('Period must be >= 1 or null');
