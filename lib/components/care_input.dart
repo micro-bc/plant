@@ -15,7 +15,8 @@ class CareInput extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => ChangeNotifierProvider.value(
+  Widget build(BuildContext context) =>
+      ChangeNotifierProvider<PlantCareModel>.value(
         value: careModel,
         child: Consumer<PlantCareModel>(
           builder: (_, __, ___) => Column(

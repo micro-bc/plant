@@ -1,8 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:plant/models/plant_care.dart';
 import 'package:plant/utils/plant_type.dart';
 import 'package:uuid/uuid.dart';
+
+import 'plant_care.dart';
 
 class PlantModel extends ChangeNotifier with EquatableMixin {
   String _id, _name, _notes;

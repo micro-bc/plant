@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:plant/components/select_plant.dart';
 import 'package:plant/models/plant.dart';
 import 'package:plant/utils/care_icons.dart';
 import 'package:provider/provider.dart';
 
 import 'care_input.dart';
+import 'select_plant.dart';
 
 class PlantForm extends StatelessWidget {
   @override

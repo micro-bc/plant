@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 class AddPlantPage extends StatelessWidget {
   // TODO Form key provider
   @override
-  Widget build(BuildContext context) => ChangeNotifierProvider(
+  Widget build(BuildContext context) => ChangeNotifierProvider<PlantModel>(
         create: (context) => PlantModel(),
         builder: (context, _) => WillPopScope(
           onWillPop: () => _onBackPressed(context),

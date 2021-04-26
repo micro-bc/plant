@@ -1,7 +1,8 @@
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
-import 'package:plant/models/plant.dart';
+
+import 'plant.dart';
 
 class PlantsModel extends ChangeNotifier {
   final Map<String, PlantModel> _plants = {};
