@@ -8,7 +8,7 @@ void main() {
   test('Default constructor', () {
     final plant = PlantModel();
 
-    expect(Uuid.isValidUUID(plant.id), isTrue);
+    expect(Uuid.isValidUUID(fromString: plant.id), isTrue);
     expect(plant.name, isEmpty);
     expect(plant.notes, isEmpty);
     expect(plant.type, same(PlantType.defaultValue));
